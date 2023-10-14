@@ -3,16 +3,17 @@ from email.mime.text import MIMEText
 import mysql.connector
 from datetime import datetime
 import email.message
+import os
 
-# Configurações da conexão com o banco de dados
-db_config = {
-    "host": "coincap-data-engineering.cuh8tdvoemfc.us-east-1.rds.amazonaws.com",
-    "user": "mbaGrupo1",
-    "password": "mba-es-25-grupo-01",
-    "database": "coincap",
+
+config = {
+    "host": os.environ['DATABASE_HOST'],
+    "user": os.environ['DATABASE_USER'],
+    "password": os.environ['DATABASE_PASSWORD'],
+    "database": os.environ['DATABASE_NAME']
 }
 
-smtp_password = "ucmfizgmnsalqflq"
+smtp_password = os.environ['SMTP_PASSWORD']
 sender_email = "projectdataengineering@gmail.com"
 receiver_email = "projectdataengineering@gmail.com"
 
@@ -20,8 +21,7 @@ target_price = 130000
 
 def get_bitcoin_price_from_database():
     try:
-        # Estabelecer a conexão com o banco de dados
-        connection = mysql.connector.connect(**db_config)
+        connection = mysql.connector.connect(**config)
         cursor = connection.cursor()
         query = "SELECT priceBRL, timestamp FROM bitcoin ORDER BY timestamp DESC LIMIT 1"
         cursor.execute(query)
@@ -51,7 +51,7 @@ def send_email(subject, message):
     s.starttls()
     
     try:
-        s.login(sender_email, smtp_password)
+        s.login(sender_email,smtp_password)
         s.sendmail(sender_email, [receiver_email], msg.as_string().encode('utf-8'))
         print('Email enviado')
     except smtplib.SMTPException as e:
