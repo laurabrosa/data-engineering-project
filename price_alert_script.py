@@ -4,9 +4,14 @@ import mysql.connector
 from datetime import datetime
 import email.message
 
-db_url = "mysql://mbaGrupo1:mba-es-25-grupo-01@jdbc:mysql://coincap-data-engineering.cuh8tdvoemfc.us-east-1.rds.amazonaws.com:3306/coincap"
+# Configurações da conexão com o banco de dados
+db_config = {
+    "host": "coincap-data-engineering.cuh8tdvoemfc.us-east-1.rds.amazonaws.com",
+    "user": "mbaGrupo1",
+    "password": "mba-es-25-grupo-01",
+    "database": "coincap",
+}
 
-msg = email.message.Message()
 smtp_password = "ucmfizgmnsalqflq"
 sender_email = "projectdataengineering@gmail.com"
 receiver_email = "projectdataengineering@gmail.com"
@@ -15,9 +20,8 @@ target_price = 130000
 
 def get_bitcoin_price_from_database():
     try:
-        connection = mysql.connector.connect(
-            host=db_url
-        )
+        # Estabelecer a conexão com o banco de dados
+        connection = mysql.connector.connect(**db_config)
         cursor = connection.cursor()
         query = "SELECT priceBRL, timestamp FROM bitcoin ORDER BY timestamp DESC LIMIT 1"
         cursor.execute(query)
@@ -27,25 +31,33 @@ def get_bitcoin_price_from_database():
             return float(priceBRL), timestamp
         else:
             return None
-    except Exception as e:
+    except mysql.connector.Error as e:
         print(f"Erro ao consultar o banco de dados: {str(e)}")
         return None
     finally:
-        cursor.close()
-        connection.close()
+        if 'cursor' in locals():
+            cursor.close()
+        if 'connection' in locals():
+            connection.close()
 
 def send_email(subject, message):
-    msg = MIMEText(message)
+    msg = email.message.Message()
+    msg.set_payload(message)
     msg["Subject"] = subject
     msg["From"] = sender_email
     msg["To"] = receiver_email
 
-s = smtplib.SMTP ('smtp.gmail.com: 587')
-s.starttls ()
-s.login(msg['From'],smtp_password)
-s.sendmail(msg['From'], [msg['To']], msg.as_string().encode('utf-8'))
-print('Email enviado')
-
+    s = smtplib.SMTP('smtp.gmail.com', 587)
+    s.starttls()
+    
+    try:
+        s.login(sender_email, smtp_password)
+        s.sendmail(sender_email, [receiver_email], msg.as_string().encode('utf-8'))
+        print('Email enviado')
+    except smtplib.SMTPException as e:
+        print(f"Erro ao enviar o email: {str(e)}")
+    finally:
+        s.quit()
 
 if __name__ == "__main__":
     result = get_bitcoin_price_from_database()
