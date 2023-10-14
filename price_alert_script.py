@@ -2,15 +2,14 @@ import smtplib
 from email.mime.text import MIMEText
 import mysql.connector
 from datetime import datetime
+import email.message
 
 db_url = "mysql://mbaGrupo1:mba-es-25-grupo-01@jdbc:mysql://coincap-data-engineering.cuh8tdvoemfc.us-east-1.rds.amazonaws.com:3306/coincap"
 
-smtp_server = "smtp.example.com"
-smtp_port = 587
-smtp_username = "seu_email@example.com"
-smtp_password = "sua_senha"
-sender_email = "seu_email@example.com"
-receiver_email = "email_destinatario@example.com"
+msg = email.message.Message()
+smtp_password = "ucmfizgmnsalqflq"
+sender_email = "projectdataengineering@gmail.com"
+receiver_email = "projectdataengineering@gmail.com"
 
 target_price = 130000
 
@@ -41,10 +40,12 @@ def send_email(subject, message):
     msg["From"] = sender_email
     msg["To"] = receiver_email
 
-    with smtplib.SMTP(smtp_server, smtp_port) as server:
-        server.starttls()
-        server.login(smtp_username, smtp_password)
-        server.sendmail(sender_email, [receiver_email], msg.as_string())
+s = smtplib.SMTP ('smtp.gmail.com: 587')
+s.starttls ()
+s.login(msg['From'],smtp_password)
+s.sendmail(msg['From'], [msg['To']], msg.as_string().encode('utf-8'))
+print('Email enviado')
+
 
 if __name__ == "__main__":
     result = get_bitcoin_price_from_database()
