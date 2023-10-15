@@ -1,8 +1,9 @@
 import time
 import schedule
-import requests
 import database
+import requests
 import helpers
+import uuid
 
 
 def fetch_bitcoin_data():
@@ -12,7 +13,7 @@ def fetch_bitcoin_data():
 
     if response.status_code == 200:
         bitcoin_data = {
-            "id": data["data"]["id"],
+            "id": str(uuid.uuid1()),
             "timestamp": helpers.convert_UNIX_timestamp(data["timestamp"]),
             "rank": int(data["data"]["rank"]),
             "symbol": data["data"]["symbol"],
@@ -22,6 +23,8 @@ def fetch_bitcoin_data():
 
         database.insert_bitcoin_data(bitcoin_data)
         print("Data inserted with success!")
+    else:
+        return None
 
 
 schedule.every().minutes.do(fetch_bitcoin_data)
