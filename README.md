@@ -44,3 +44,11 @@ Os grupos devem enviar uma documentação técnica a respeito da solução criad
 - Crie o arquivo `.env` com as variáveis de ambiente do banco de dados
 - Rode o script de ingestão de dados: `python src/data_ingestion.py`
 - Rode o script de análise de dados: `python src/data_analysis.py`
+
+## Integrantes do grupo
+
+- Laura Rosa
+- Celina Valmo
+- Sayonara Alice
+- Douglas Camargo
+- José Passos
