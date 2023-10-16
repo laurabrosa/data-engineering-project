@@ -42,4 +42,5 @@ Os grupos devem enviar uma documentação técnica a respeito da solução criad
 - Rode o ambiente virtual: `source venv/bin/activate`
 - Instale as dependências: `pip install -r requirements.txt`
 - Crie o arquivo `.env` com as variáveis de ambiente do banco de dados
-- Rode o projeto: `python src/main.py`
+- Rode o script de ingestão de dados: `python src/data_ingestion.py`
+- Rode o script de análise de dados: `python src/data_analysis.py`
