@@ -24,7 +24,7 @@ def fetch_bitcoin_data():
         database.insert_bitcoin_data(bitcoin_data)
         print("Data inserted with success!")
     else:
-        return None
+        return print("Erro ao consultar a API!")
 
 
 schedule.every().minutes.do(fetch_bitcoin_data)

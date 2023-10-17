@@ -3,6 +3,8 @@ from datetime import datetime
 import email.message
 import database
 import os
+import time
+import schedule
 
 smtp_password = os.environ['SMTP_PASSWORD']
 sender_email = os.environ['SENDER_EMAIL']
@@ -32,16 +34,19 @@ def send_email(subject, message):
         s.quit()
 
 
-if __name__ == "__main__":
+def data_analysis():
     result = database.get_bitcoin_price_from_database()
-
     if result:
         priceBRL, timestamp = result
-        current_datetime = datetime.now()
-
         if priceBRL < target_price:
             subject = "Alerta de Preço do Bitcoin"
             message = f"Preço de R${priceBRL:.2f} em {timestamp}"
             send_email(subject, message)
-
         print(f"Preço do Bitcoin em {timestamp}: R${priceBRL:.2f}")
+
+
+schedule.every().minutes.do(data_analysis)
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
